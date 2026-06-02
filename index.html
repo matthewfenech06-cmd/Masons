@@ -1450,11 +1450,11 @@
     const hh1s = 16*3600, hh1e = 19*3600, hh2s = 22*3600, hh2e = 23*3600;
     let msg = '', until = 0, active = false;
 
-    if      (secs >= hh1s && secs < hh1e) { active = true;  msg = 'Happy Hour is ON! Evening Edition 🌅'; until = hh1e - secs; }
-    else if (secs >= hh2s && secs < hh2e) { active = true;  msg = 'Happy Hour is ON! Late Night Edition 🌙'; until = hh2e - secs; }
-    else if (secs < hh1s)                 { active = false; msg = 'Next happy hour: Evening Edition at 16:00'; until = hh1s - secs; }
-    else if (secs < hh2s)                 { active = false; msg = 'Next happy hour: Late Night Edition at 22:00'; until = hh2s - secs; }
-    else                                   { active = false; msg = 'Next happy hour: Evening Edition tomorrow at 16:00'; until = 86400 - secs + hh1s; }
+    if      (secs >= hh1s && secs < hh1e) { active = true;  msg = 'Happy Hour is on now! Next one at 22:00 🌙'; until = hh2s - secs; }
+    else if (secs >= hh2s && secs < hh2e) { active = true;  msg = 'Happy Hour is on now! Late Night Edition 🌙'; until = hh2e - secs; }
+    else if (secs < hh1s)                 { active = false; msg = 'Next happy hour at 16:00'; until = hh1s - secs; }
+    else if (secs < hh2s)                 { active = false; msg = 'Next happy hour at 22:00'; until = hh2s - secs; }
+    else                                   { active = false; msg = 'Next happy hour tomorrow at 16:00'; until = 86400 - secs + hh1s; }
 
     document.getElementById('hh-status-message').textContent = msg;
     const h = Math.floor(until/3600), m = Math.floor((until%3600)/60), s = until%60;
