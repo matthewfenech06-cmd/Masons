@@ -1,0 +1,1523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mason's Bistro — Where the Sea Meets Your Table</title>
+  <meta name="description" content="Mason's Bistro — A Mediterranean bistro and bar on the Sliema seafront, Tower Road, Malta. Fresh cuisine, signature cocktails, and happy hour daily." />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cinzel+Decorative:wght@400;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300;1,9..40,400&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ── RESET ─────────────────────────────────── */
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      /* Brand colours matched directly from the logo */
+      --navy:        #1e3f99;   /* logo banner blue */
+      --navy-dark:   #14297a;   /* deeper shade */
+      --navy-deeper: #0e1d5c;   /* darkest, hero overlays */
+      --navy-mid:    #1a3585;
+      --white:       #ffffff;
+      --off-white:   #f7f8fb;   /* very pale blue-white for sections */
+      --light-grey:  #eef0f6;
+      --mid-grey:    #d0d5e8;
+      --text-dark:   #111827;
+      --text-muted:  #5a6478;
+      /* Gold used only as a single tasteful accent — never dominant */
+      --gold:        #b8922a;
+      --gold-light:  #d4a83c;
+
+      --serif: 'Cormorant Garamond', Georgia, serif;
+      --sans:  'DM Sans', system-ui, sans-serif;
+
+      --ease-out:    cubic-bezier(0.16, 1, 0.3, 1);
+      --ease-in-out: cubic-bezier(0.45, 0, 0.55, 1);
+    }
+
+    html { scroll-behavior: smooth; font-size: 16px; }
+
+    body {
+      font-family: var(--sans);
+      color: var(--text-dark);
+      background: var(--white);
+      cursor: none;
+      overflow-x: hidden;
+    }
+
+    /* ── GRAIN OVERLAY ─────────────────────────── */
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      opacity: 0.028;
+      pointer-events: none;
+      z-index: 9999;
+    }
+
+    /* ── CUSTOM CURSOR ─────────────────────────── */
+    #cursor-dot {
+      width: 7px; height: 7px;
+      background: var(--navy);
+      border-radius: 50%;
+      position: fixed; top: 0; left: 0;
+      pointer-events: none; z-index: 10000;
+      transform: translate(-50%, -50%);
+      transition: background .2s;
+    }
+    #cursor-ring {
+      width: 34px; height: 34px;
+      border: 1.5px solid var(--navy);
+      border-radius: 50%;
+      position: fixed; top: 0; left: 0;
+      pointer-events: none; z-index: 9999;
+      transform: translate(-50%, -50%);
+      transition: width .25s var(--ease-out), height .25s var(--ease-out), opacity .2s, border-color .2s;
+      opacity: 0.5;
+    }
+    body.cursor-hover #cursor-ring { width: 52px; height: 52px; opacity: 0.85; border-color: var(--navy); }
+    /* On dark sections, flip cursor to white */
+    body.cursor-dark #cursor-dot  { background: var(--white); }
+    body.cursor-dark #cursor-ring { border-color: rgba(255,255,255,0.7); }
+    body.cursor-dark.cursor-hover #cursor-ring { border-color: var(--white); opacity: 1; }
+
+    /* ── PAGE LOADER ───────────────────────────── */
+    #loader {
+      position: fixed; inset: 0;
+      background: var(--navy);
+      z-index: 99999;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 2rem;
+      transition: opacity .8s var(--ease-out), visibility .8s;
+    }
+    #loader.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+    #loader-bar {
+      width: 160px; height: 1px;
+      background: rgba(255,255,255,.15);
+      position: relative; overflow: hidden;
+    }
+    #loader-bar::after {
+      content: '';
+      position: absolute; left: -100%; top: 0; width: 100%; height: 100%;
+      background: var(--white);
+      animation: loader-fill 1.9s var(--ease-in-out) forwards;
+    }
+    @keyframes loader-fill { to { left: 100%; } }
+
+    /* ── LOGO SVG ──────────────────────────────── */
+    /* Reused inline — sized via width/height on the element */
+    .logo-svg { display: block; }
+
+    /* ── NAVIGATION ────────────────────────────── */
+    #nav {
+      position: fixed; top: 0; left: 0; right: 0;
+      z-index: 1000;
+      padding: 1rem 4vw;
+      display: flex; align-items: center; justify-content: space-between;
+      transition: background .4s, backdrop-filter .4s, padding .3s;
+    }
+    #nav.scrolled {
+      background: rgba(14, 29, 92, 0.95);
+      backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
+      padding: .7rem 4vw;
+      box-shadow: 0 1px 0 rgba(255,255,255,.08);
+    }
+    .nav-logo-wrap { display: flex; align-items: center; text-decoration: none; }
+    .nav-links {
+      display: flex; align-items: center; gap: 2rem; list-style: none;
+    }
+    .nav-links a {
+      font-size: .75rem; font-weight: 500;
+      letter-spacing: .14em; text-transform: uppercase;
+      color: rgba(255,255,255,.75); text-decoration: none;
+      transition: color .2s;
+      position: relative;
+    }
+    .nav-links a::after {
+      content: ''; position: absolute; bottom: -3px;
+      left: 0; right: 100%; height: 1px;
+      background: var(--white);
+      transition: right .3s var(--ease-out);
+    }
+    .nav-links a:hover, .nav-links a.active { color: var(--white); }
+    .nav-links a:hover::after, .nav-links a.active::after { right: 0; }
+    .nav-cta {
+      background: var(--white) !important;
+      color: var(--navy) !important;
+      padding: .5rem 1.2rem; border-radius: 2px;
+      font-weight: 600 !important;
+    }
+    .nav-cta::after { display: none; }
+    .nav-cta:hover { background: var(--off-white) !important; }
+    #nav-hamburger {
+      display: none; flex-direction: column; gap: 5px;
+      background: none; border: none; cursor: none; padding: 4px;
+    }
+    #nav-hamburger span {
+      display: block; width: 24px; height: 1.5px;
+      background: var(--white);
+      transition: transform .3s, opacity .3s;
+    }
+    #nav-hamburger.open span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+    #nav-hamburger.open span:nth-child(2) { opacity: 0; }
+    #nav-hamburger.open span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+
+    @media (max-width: 860px) {
+      .nav-links {
+        position: fixed; top: 0; right: 0;
+        width: 260px; height: 100vh;
+        background: var(--navy-dark);
+        flex-direction: column; align-items: flex-start;
+        justify-content: center; padding: 4rem 2.5rem; gap: 1.75rem;
+        transform: translateX(100%);
+        transition: transform .4s var(--ease-out);
+        box-shadow: -8px 0 40px rgba(0,0,0,.35);
+      }
+      .nav-links.open { transform: translateX(0); }
+      .nav-links a { font-size: .85rem; }
+      .nav-cta { background: transparent !important; color: var(--white) !important; }
+      #nav-hamburger { display: flex; z-index: 10; }
+    }
+
+    /* ── SECTION UTILITY ──────────────────────── */
+    .container { width: 100%; max-width: 1200px; margin: 0 auto; padding: 0 4vw; }
+
+    .section-label {
+      font-family: var(--sans);
+      font-size: .68rem; font-weight: 600;
+      letter-spacing: .24em; text-transform: uppercase;
+      color: var(--navy); margin-bottom: .85rem;
+    }
+    .section-title {
+      font-family: var(--serif);
+      font-size: clamp(2.2rem, 4.5vw, 3.5rem);
+      font-weight: 400; line-height: 1.15;
+    }
+
+    /* Reveal */
+    .reveal {
+      opacity: 0; transform: translateY(28px);
+      transition: opacity .75s var(--ease-out), transform .75s var(--ease-out);
+    }
+    .reveal.visible { opacity: 1; transform: none; }
+    .reveal-delay-1 { transition-delay: .1s; }
+    .reveal-delay-2 { transition-delay: .2s; }
+    .reveal-delay-3 { transition-delay: .3s; }
+    .reveal-delay-4 { transition-delay: .4s; }
+    .reveal-delay-5 { transition-delay: .5s; }
+
+    /* Wave */
+    .wave-divider { width: 100%; overflow: hidden; line-height: 0; }
+    .wave-divider svg { display: block; }
+
+    /* ── HERO ──────────────────────────────────── */
+    #hero {
+      height: 100vh; min-height: 640px;
+      position: relative; display: flex;
+      align-items: center; justify-content: center; overflow: hidden;
+    }
+    #hero-bg {
+      position: absolute; inset: 0;
+      background-image: url('https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=1920&q=85&auto=format&fit=crop');
+      background-size: cover; background-position: center;
+      transform: scale(1.06); transition: transform 8s ease-out;
+    }
+    #hero-bg.loaded { transform: scale(1); }
+    #hero-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(160deg,
+        rgba(14,29,92,.78) 0%,
+        rgba(14,29,92,.52) 50%,
+        rgba(14,29,92,.70) 100%);
+    }
+    .hero-content {
+      position: relative; z-index: 2;
+      text-align: center; color: var(--white);
+      padding: 0 4vw; max-width: 860px;
+    }
+    .hero-badge {
+      display: inline-block;
+      font-size: .68rem; letter-spacing: .28em; text-transform: uppercase;
+      color: rgba(255,255,255,.7);
+      border: 1px solid rgba(255,255,255,.3);
+      padding: .4rem 1.2rem; margin-bottom: 2rem;
+      opacity: 0; animation: hero-up .8s .4s var(--ease-out) forwards;
+    }
+    .hero-logo-wrap {
+      margin-bottom: 1.5rem;
+      opacity: 0; animation: hero-up .9s .55s var(--ease-out) forwards;
+      display: flex; justify-content: center;
+    }
+    .hero-tagline {
+      font-family: var(--serif);
+      font-size: clamp(1.1rem, 2.5vw, 1.5rem);
+      font-weight: 300; font-style: italic;
+      color: rgba(255,255,255,.82);
+      margin-bottom: 2.5rem;
+      opacity: 0; animation: hero-up .9s .8s var(--ease-out) forwards;
+    }
+    .hero-sub {
+      font-size: .78rem; letter-spacing: .1em; text-transform: uppercase;
+      color: rgba(255,255,255,.5); margin-bottom: .5rem;
+    }
+    .hero-ctas {
+      display: flex; align-items: center; justify-content: center;
+      gap: 1.25rem; flex-wrap: wrap;
+      opacity: 0; animation: hero-up .9s 1s var(--ease-out) forwards;
+    }
+    @keyframes hero-up {
+      from { opacity: 0; transform: translateY(22px); }
+      to   { opacity: 1; transform: none; }
+    }
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: .5rem;
+      background: var(--white); color: var(--navy);
+      font-family: var(--sans); font-size: .78rem; font-weight: 700;
+      letter-spacing: .14em; text-transform: uppercase;
+      text-decoration: none; padding: .95rem 2rem; border-radius: 2px;
+      border: none; cursor: none;
+      transition: background .2s, transform .2s;
+    }
+    .btn-primary:hover { background: var(--off-white); transform: translateY(-2px); }
+    .btn-outline {
+      display: inline-flex; align-items: center; gap: .5rem;
+      background: transparent; color: var(--white);
+      font-family: var(--sans); font-size: .78rem; font-weight: 500;
+      letter-spacing: .14em; text-transform: uppercase;
+      text-decoration: none; padding: .95rem 2rem; border-radius: 2px;
+      border: 1.5px solid rgba(255,255,255,.5); cursor: none;
+      transition: border-color .2s, background .2s, transform .2s;
+    }
+    .btn-outline:hover {
+      border-color: var(--white);
+      background: rgba(255,255,255,.08);
+      transform: translateY(-2px);
+    }
+    .hero-scroll-hint {
+      position: absolute; bottom: 2.5rem; left: 50%;
+      transform: translateX(-50%);
+      display: flex; flex-direction: column; align-items: center; gap: .5rem;
+      color: rgba(255,255,255,.4);
+      font-size: .62rem; letter-spacing: .2em; text-transform: uppercase;
+      opacity: 0; animation: hero-up 1s 1.4s var(--ease-out) forwards;
+    }
+    .scroll-line {
+      width: 1px; height: 38px;
+      background: linear-gradient(to bottom, rgba(255,255,255,.45), transparent);
+      animation: scroll-pulse 2s infinite;
+    }
+    @keyframes scroll-pulse {
+      0%, 100% { opacity: 1; } 50% { opacity: .25; }
+    }
+
+    /* ── ABOUT ─────────────────────────────────── */
+    #about { padding: 8rem 0; background: var(--off-white); }
+    .about-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 5.5rem; align-items: center;
+    }
+    .about-left .section-label { color: var(--navy); }
+    .about-left .section-title { color: var(--navy); margin-bottom: 1.75rem; }
+    .about-text {
+      font-size: 1.0375rem; line-height: 1.82; color: #3a3f52;
+      margin-bottom: 1.2rem;
+    }
+    .about-text strong { color: var(--navy); font-weight: 600; }
+    .about-stat-row {
+      display: flex; gap: 2.5rem; margin-top: 2.5rem;
+      padding-top: 2rem; border-top: 1px solid var(--mid-grey);
+    }
+    .about-stat strong {
+      display: block; font-family: var(--serif);
+      font-size: 2.4rem; font-weight: 500; color: var(--navy); line-height: 1;
+    }
+    .about-stat span { font-size: .78rem; color: var(--text-muted); letter-spacing: .05em; }
+    .about-right { position: relative; }
+    .about-img-wrap { position: relative; border-radius: 3px; overflow: hidden; }
+    .about-img-wrap img {
+      width: 100%; aspect-ratio: 4/5; object-fit: cover; display: block;
+    }
+    .about-img-badge {
+      position: absolute; bottom: 2rem; left: -2rem;
+      background: var(--navy); color: var(--white);
+      padding: 1.2rem 1.75rem;
+      border-left: 3px solid var(--white);
+    }
+    .about-img-badge strong {
+      display: block; font-family: var(--serif);
+      font-size: 1.05rem; font-weight: 500;
+    }
+    .about-img-badge span { font-size: .72rem; color: rgba(255,255,255,.6); }
+    .about-accent-line {
+      position: absolute; top: -1.5rem; right: -1.5rem;
+      width: 70px; height: 70px;
+      border: 1.5px solid var(--navy); border-radius: 50%;
+      opacity: .25;
+    }
+    @media (max-width: 860px) {
+      .about-grid { grid-template-columns: 1fr; gap: 3rem; }
+      .about-img-badge { left: 1rem; }
+    }
+
+    /* ── HAPPY HOUR ────────────────────────────── */
+    #happy-hour {
+      background: var(--navy-deeper);
+      color: var(--white); padding: 7rem 0;
+      position: relative; overflow: hidden;
+    }
+    #happy-hour::before {
+      content: '';
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(ellipse 55% 50% at 85% 50%, rgba(30,63,153,.35) 0%, transparent 60%),
+        radial-gradient(ellipse 40% 60% at 12% 60%, rgba(14,29,92,.6) 0%, transparent 70%);
+    }
+    .hh-inner { position: relative; z-index: 1; }
+    .hh-top {
+      display: grid; grid-template-columns: 1fr auto;
+      gap: 3.5rem; align-items: start; margin-bottom: 4rem;
+    }
+    .hh-label {
+      font-size: .68rem; letter-spacing: .26em; text-transform: uppercase;
+      color: rgba(255,255,255,.5); margin-bottom: 1rem;
+    }
+    .hh-title {
+      font-family: var(--serif);
+      font-size: clamp(2.8rem, 6vw, 4.8rem);
+      font-weight: 300; line-height: 1.1; margin-bottom: 1.25rem;
+    }
+    .hh-title em { font-style: italic; color: rgba(255,255,255,.75); }
+    .hh-sub {
+      font-size: 1.0375rem; color: rgba(255,255,255,.58); line-height: 1.72; max-width: 460px;
+    }
+    .hh-deal-badge {
+      background: var(--white); color: var(--navy);
+      padding: 1.75rem 2rem; text-align: center;
+      min-width: 190px; align-self: center; border-radius: 2px;
+    }
+    .hh-deal-num {
+      font-family: var(--serif); font-size: 3.4rem;
+      font-weight: 600; line-height: 1; color: var(--navy);
+    }
+    .hh-deal-text {
+      font-size: .72rem; font-weight: 700; letter-spacing: .14em;
+      text-transform: uppercase; color: var(--navy); margin-top: .25rem;
+    }
+    .hh-times {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 1.5rem; margin-bottom: 4rem;
+    }
+    .hh-time-card {
+      border: 1px solid rgba(255,255,255,.15);
+      padding: 2rem 2.25rem; position: relative; overflow: hidden;
+      transition: border-color .3s, background .3s;
+    }
+    .hh-time-card:hover { border-color: rgba(255,255,255,.4); background: rgba(255,255,255,.04); }
+    .hh-time-label {
+      font-size: .65rem; letter-spacing: .22em; text-transform: uppercase;
+      color: rgba(255,255,255,.45); margin-bottom: .75rem;
+    }
+    .hh-time-range {
+      font-family: var(--serif);
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 400; color: var(--white); margin-bottom: .5rem;
+    }
+    .hh-time-note { font-size: .83rem; color: rgba(255,255,255,.4); font-style: italic; }
+    .hh-icon { position: absolute; top: 1.5rem; right: 2rem; font-size: 1.8rem; opacity: .18; }
+
+    /* Countdown */
+    .hh-countdown-wrap {
+      border-top: 1px solid rgba(255,255,255,.1);
+      padding-top: 3rem; text-align: center;
+    }
+    .hh-countdown-label {
+      font-size: .68rem; letter-spacing: .2em; text-transform: uppercase;
+      color: rgba(255,255,255,.35); margin-bottom: 1.5rem;
+    }
+    #hh-status-message {
+      font-family: var(--serif); font-size: 1.35rem;
+      font-style: italic; color: rgba(255,255,255,.75); margin-bottom: 1rem;
+    }
+    .hh-countdown {
+      display: flex; gap: 1.25rem;
+      justify-content: center; align-items: center;
+    }
+    .hh-cd-unit { text-align: center; }
+    .hh-cd-num {
+      font-family: var(--serif);
+      font-size: clamp(2.4rem, 5vw, 3.8rem);
+      font-weight: 300; color: var(--white);
+      line-height: 1; display: block; min-width: 68px;
+    }
+    .hh-cd-label {
+      font-size: .58rem; letter-spacing: .18em; text-transform: uppercase;
+      color: rgba(255,255,255,.3); margin-top: .4rem;
+    }
+    .hh-cd-sep {
+      font-family: var(--serif); font-size: 2.8rem;
+      color: rgba(255,255,255,.2); line-height: 1; margin-bottom: 10px;
+    }
+    .hh-active-badge {
+      display: inline-block;
+      background: var(--white); color: var(--navy);
+      font-size: .7rem; font-weight: 700; letter-spacing: .16em;
+      text-transform: uppercase; padding: .5rem 1.5rem; border-radius: 2px;
+      animation: pulse-badge 1.6s infinite;
+    }
+    @keyframes pulse-badge {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(255,255,255,.35); }
+      50%       { box-shadow: 0 0 0 10px rgba(255,255,255,0); }
+    }
+    @media (max-width: 700px) {
+      .hh-top { grid-template-columns: 1fr; }
+      .hh-times { grid-template-columns: 1fr; }
+    }
+
+    /* ── MENU ──────────────────────────────────── */
+    #menu { padding: 8rem 0; background: var(--white); }
+    .menu-header { text-align: center; margin-bottom: 3.5rem; }
+    .menu-header .section-title { color: var(--navy); }
+    .menu-header .section-label { color: var(--navy); }
+
+    .menu-tabs {
+      display: flex; justify-content: center; gap: 0;
+      margin-bottom: 3rem;
+      border-bottom: 2px solid var(--light-grey);
+      overflow-x: auto; -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+    .menu-tabs::-webkit-scrollbar { display: none; }
+    .menu-tab {
+      font-size: .76rem; font-weight: 500; letter-spacing: .1em; text-transform: uppercase;
+      color: var(--text-muted); padding: .9rem 1.5rem;
+      border: none; background: none; cursor: none; white-space: nowrap;
+      position: relative; transition: color .2s;
+      border-bottom: 2px solid transparent; margin-bottom: -2px;
+    }
+    .menu-tab:hover { color: var(--navy); }
+    .menu-tab.active { color: var(--navy); border-bottom-color: var(--navy); }
+
+    .menu-panel { display: none; animation: tab-fade .4s var(--ease-out); }
+    .menu-panel.active { display: block; }
+    @keyframes tab-fade { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+    .menu-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1rem;
+    }
+    .menu-card {
+      background: var(--off-white);
+      padding: 1.5rem 1.75rem; border-radius: 3px;
+      display: flex; justify-content: space-between;
+      align-items: flex-start; gap: 1rem;
+      transition: transform .25s var(--ease-out), box-shadow .25s;
+      position: relative; overflow: hidden;
+    }
+    .menu-card::before {
+      content: ''; position: absolute;
+      left: 0; top: 0; bottom: 0; width: 3px;
+      background: transparent; transition: background .25s;
+    }
+    .menu-card:hover { transform: translateY(-3px); box-shadow: 0 8px 28px rgba(30,63,153,.1); }
+    .menu-card:hover::before { background: var(--navy); }
+    .menu-card.signature { background: #edf0fb; }
+    .menu-card.signature::after {
+      content: 'Chef\'s Choice';
+      position: absolute; top: .7rem; right: .8rem;
+      font-size: .58rem; font-weight: 600; letter-spacing: .14em; text-transform: uppercase;
+      color: var(--navy); border: 1px solid rgba(30,63,153,.3);
+      padding: .18rem .5rem; border-radius: 1px;
+    }
+    .menu-card-info { flex: 1; }
+    .menu-card-name {
+      font-family: var(--serif); font-size: 1.1rem;
+      font-weight: 500; color: var(--navy); margin-bottom: .3rem;
+    }
+    .menu-card-desc { font-size: .81rem; color: var(--text-muted); line-height: 1.6; }
+    .menu-card-price {
+      font-family: var(--serif); font-size: 1.15rem;
+      font-weight: 500; color: var(--navy); white-space: nowrap; flex-shrink: 0;
+    }
+    .menu-note {
+      text-align: center; margin-top: 2.5rem;
+      font-size: .82rem; color: var(--text-muted); font-style: italic;
+    }
+
+    /* ── RESERVATION ───────────────────────────── */
+    #reservation {
+      padding: 8rem 0;
+      background: var(--navy-dark);
+      color: var(--white); position: relative; overflow: hidden;
+    }
+    #reservation::before {
+      content: ''; position: absolute; inset: 0;
+      background: url('https://images.unsplash.com/photo-1559339352-11d035aa65de?w=1400&q=55&auto=format&fit=crop') center/cover no-repeat;
+      opacity: .055;
+    }
+    .res-inner { position: relative; z-index: 1; }
+    .res-header { text-align: center; margin-bottom: 3.5rem; }
+    .res-header .section-title { color: var(--white); }
+    .res-header .section-label { color: rgba(255,255,255,.55); }
+    .res-header p { color: rgba(255,255,255,.55); font-style: italic; font-family: var(--serif); font-size: 1.05rem; margin-top: .75rem; }
+
+    .res-form { max-width: 720px; margin: 0 auto; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; margin-bottom: 1.2rem; }
+    .form-group { display: flex; flex-direction: column; gap: .5rem; }
+    .form-group.full { grid-column: 1 / -1; }
+    .form-label {
+      font-size: .67rem; font-weight: 600; letter-spacing: .16em;
+      text-transform: uppercase; color: rgba(255,255,255,.45);
+    }
+    .form-control {
+      background: rgba(255,255,255,.07);
+      border: 1px solid rgba(255,255,255,.14);
+      color: var(--white); font-family: var(--sans); font-size: .93rem;
+      padding: .82rem 1rem; border-radius: 2px;
+      outline: none; transition: border-color .25s, background .25s;
+      cursor: none; appearance: none; -webkit-appearance: none;
+    }
+    .form-control::placeholder { color: rgba(255,255,255,.28); }
+    .form-control:focus { border-color: rgba(255,255,255,.55); background: rgba(255,255,255,.1); }
+    .form-control option { background: var(--navy-dark); color: var(--white); }
+    textarea.form-control { resize: vertical; min-height: 105px; }
+    .res-submit { width: 100%; padding: 1.1rem; margin-top: .5rem; font-size: .8rem; letter-spacing: .16em; }
+    .form-footer-note {
+      text-align: center; font-size: .76rem;
+      color: rgba(255,255,255,.3); margin-top: 1.2rem; font-style: italic;
+    }
+    @media (max-width: 600px) { .form-row { grid-template-columns: 1fr; } }
+
+    /* Modal */
+    #res-modal {
+      position: fixed; inset: 0; z-index: 9000;
+      display: flex; align-items: center; justify-content: center; padding: 2rem;
+      opacity: 0; visibility: hidden;
+      transition: opacity .35s, visibility .35s;
+    }
+    #res-modal.open { opacity: 1; visibility: visible; }
+    .modal-backdrop {
+      position: absolute; inset: 0;
+      background: rgba(0,0,0,.72); backdrop-filter: blur(6px);
+    }
+    .modal-box {
+      position: relative; background: var(--navy-dark);
+      border: 1px solid rgba(255,255,255,.18);
+      padding: 3.5rem; max-width: 500px; width: 100%;
+      text-align: center; border-radius: 4px;
+      transform: translateY(18px);
+      transition: transform .35s var(--ease-out);
+    }
+    #res-modal.open .modal-box { transform: none; }
+    .modal-icon {
+      width: 60px; height: 60px; border: 2px solid var(--white); border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 1.75rem; font-size: 1.4rem;
+    }
+    .modal-title { font-family: var(--serif); font-size: 1.9rem; font-weight: 400; color: var(--white); margin-bottom: .75rem; }
+    .modal-body { color: rgba(255,255,255,.55); font-size: .92rem; line-height: 1.72; margin-bottom: 1rem; }
+    #modal-summary { font-family: var(--serif); font-style: italic; font-size: 1rem; color: rgba(255,255,255,.8); margin-bottom: 2rem; }
+    .modal-close { display: inline-block; padding: .85rem 2.5rem; }
+
+    /* ── GALLERY ───────────────────────────────── */
+    #gallery { padding: 8rem 0; background: var(--off-white); }
+    .gallery-header { text-align: center; margin-bottom: 3.5rem; }
+    .gallery-header .section-title { color: var(--navy); }
+    .gallery-grid {
+      display: grid; grid-template-columns: repeat(4, 1fr);
+      gap: .85rem;
+    }
+    .gallery-item { position: relative; overflow: hidden; border-radius: 2px; cursor: none; }
+    .gallery-item:nth-child(1) { grid-column: span 2; grid-row: span 2; }
+    .gallery-item:nth-child(5) { grid-column: span 2; }
+    .gallery-item img {
+      width: 100%; height: 100%; object-fit: cover; display: block;
+      min-height: 210px; transition: transform .6s var(--ease-out);
+    }
+    .gallery-item:hover img { transform: scale(1.06); }
+    .gallery-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(160deg, transparent 40%, rgba(14,29,92,.72) 100%);
+      opacity: 0; transition: opacity .35s;
+      display: flex; align-items: flex-end; padding: 1.5rem;
+    }
+    .gallery-item:hover .gallery-overlay { opacity: 1; }
+    .gallery-overlay-text {
+      font-family: var(--serif); font-style: italic;
+      font-size: .9rem; color: rgba(255,255,255,.85);
+    }
+    @media (max-width: 720px) {
+      .gallery-grid { grid-template-columns: 1fr 1fr; }
+      .gallery-item:nth-child(1) { grid-column: span 2; grid-row: span 1; }
+      .gallery-item:nth-child(5) { grid-column: span 1; }
+    }
+    @media (max-width: 480px) {
+      .gallery-grid { grid-template-columns: 1fr; }
+      .gallery-item:nth-child(1), .gallery-item:nth-child(5) { grid-column: span 1; }
+    }
+
+    /* ── CONTACT ───────────────────────────────── */
+    #contact { padding: 8rem 0 0; background: var(--white); }
+    .contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; margin-bottom: 4rem; }
+    .contact-info .section-title { color: var(--navy); margin-bottom: 2rem; }
+    .contact-detail { display: flex; gap: 1.25rem; align-items: flex-start; margin-bottom: 1.6rem; }
+    .contact-icon {
+      width: 38px; height: 38px; background: var(--light-grey);
+      border-radius: 50%; display: flex; align-items: center;
+      justify-content: center; font-size: .95rem; flex-shrink: 0; margin-top: 2px;
+    }
+    .contact-detail-text strong {
+      display: block; font-size: .68rem; letter-spacing: .16em;
+      text-transform: uppercase; color: var(--navy); font-weight: 600; margin-bottom: .2rem;
+    }
+    .contact-detail-text span, .contact-detail-text a {
+      font-size: .93rem; color: var(--text-dark); text-decoration: none; line-height: 1.6;
+    }
+    .contact-detail-text a:hover { color: var(--navy); text-decoration: underline; }
+    .contact-social { display: flex; gap: .75rem; margin-top: 2rem; }
+    .social-link {
+      width: 38px; height: 38px; background: var(--navy); border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--white); text-decoration: none; font-size: .85rem;
+      transition: background .25s, transform .2s;
+    }
+    .social-link:hover { background: var(--navy-dark); transform: translateY(-2px); }
+    .contact-map { border-radius: 3px; overflow: hidden; box-shadow: 0 4px 20px rgba(30,63,153,.1); }
+    .contact-map iframe { width: 100%; height: 400px; border: none; display: block; }
+    @media (max-width: 860px) { .contact-grid { grid-template-columns: 1fr; gap: 3rem; } }
+
+    /* ── FOOTER ────────────────────────────────── */
+    footer { background: var(--navy-deeper); color: rgba(255,255,255,.5); padding: 3.5rem 0 2.5rem; }
+    .footer-inner {
+      display: grid; grid-template-columns: 1.4fr 1fr 1fr;
+      gap: 3rem; padding-bottom: 3rem;
+      border-bottom: 1px solid rgba(255,255,255,.08); margin-bottom: 2rem;
+    }
+    .footer-brand p { font-size: .84rem; line-height: 1.72; max-width: 280px; margin-top: 1rem; }
+    .footer-brand .contact-social { margin-top: 1.5rem; }
+    .footer-col-title {
+      font-size: .68rem; font-weight: 600; letter-spacing: .2em;
+      text-transform: uppercase; color: var(--white); margin-bottom: 1.25rem;
+    }
+    .footer-links { list-style: none; display: flex; flex-direction: column; gap: .6rem; }
+    .footer-links a { font-size: .84rem; color: rgba(255,255,255,.45); text-decoration: none; transition: color .2s; }
+    .footer-links a:hover { color: var(--white); }
+    .footer-bottom {
+      display: flex; align-items: center; justify-content: space-between;
+      font-size: .76rem;
+    }
+    .footer-bottom a { color: rgba(255,255,255,.6); text-decoration: none; }
+    @media (max-width: 720px) {
+      .footer-inner { grid-template-columns: 1fr 1fr; }
+      .footer-brand { grid-column: 1 / -1; }
+      .footer-bottom { flex-direction: column; gap: .5rem; text-align: center; }
+    }
+    @media (max-width: 480px) { .footer-inner { grid-template-columns: 1fr; } }
+
+    /* ── SCROLL TO TOP ─────────────────────────── */
+    #scroll-top {
+      position: fixed; bottom: 2rem; right: 2rem;
+      width: 42px; height: 42px; background: var(--navy);
+      color: var(--white); border: none; border-radius: 2px; font-size: 1rem;
+      display: flex; align-items: center; justify-content: center;
+      cursor: none; opacity: 0; transform: translateY(10px);
+      transition: opacity .3s, transform .3s, background .2s; z-index: 500;
+    }
+    #scroll-top.visible { opacity: 1; transform: none; }
+    #scroll-top:hover { background: var(--navy-dark); }
+  </style>
+</head>
+<body>
+
+<!-- ── LOADER ──────────────────────────────── -->
+<div id="loader">
+  <!-- Logo in loader (white version) -->
+  <img src="logo.png" alt="Mason's Bistro" style="width:180px; filter:brightness(0) invert(1);" />
+  <div id="loader-bar"></div>
+</div>
+
+<!-- ── CURSORS ─────────────────────────────── -->
+<div id="cursor-dot"></div>
+<div id="cursor-ring"></div>
+
+<!-- ── NAV ─────────────────────────────────── -->
+<nav id="nav" role="navigation">
+  <a href="#hero" class="nav-logo-wrap">
+    <!-- Compact nav logo -->
+    <img src="logo.png" alt="Mason's Bistro" style="height:48px; width:auto; filter:brightness(0) invert(1);" />
+  </a>
+  <ul class="nav-links" id="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#happy-hour">Happy Hour</a></li>
+    <li><a href="#menu">Menu</a></li>
+    <li><a href="#gallery">Gallery</a></li>
+    <li><a href="#contact">Contact</a></li>
+    <li><a href="#reservation" class="nav-cta">Reserve</a></li>
+  </ul>
+  <button id="nav-hamburger" aria-label="Toggle menu" aria-expanded="false">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- ── HERO ────────────────────────────────── -->
+<section id="hero" role="banner">
+  <div id="hero-bg"></div>
+  <div id="hero-overlay"></div>
+  <div class="hero-content">
+    <span class="hero-badge">Tower Road · Sliema Seafront · Malta</span>
+
+    <!-- Full hero logo -->
+    <div class="hero-logo-wrap">
+      <img src="logo.png" alt="Mason's Bistro" style="width:320px; max-width:85vw; filter:brightness(0) invert(1); drop-shadow(0 2px 20px rgba(0,0,0,0.4));" />
+    </div>
+
+    <p class="hero-tagline">Where the sea meets your table</p>
+    <div class="hero-ctas">
+      <a href="#menu" class="btn-primary">View Menu</a>
+      <a href="#reservation" class="btn-outline">Reserve a Table</a>
+    </div>
+  </div>
+  <div class="hero-scroll-hint">
+    <div class="scroll-line"></div>
+    <span>Scroll</span>
+  </div>
+</section>
+
+<!-- Wave -->
+<div class="wave-divider" style="background: var(--off-white);">
+  <svg viewBox="0 0 1440 56" fill="none" xmlns="http://www.w3.org/2000/svg" style="background:var(--navy-deeper)">
+    <path d="M0 56 C240 18 480 0 720 18 C960 36 1200 56 1440 28 L1440 56 L0 56Z" fill="#f7f8fb"/>
+  </svg>
+</div>
+
+<!-- ── ABOUT ────────────────────────────────── -->
+<section id="about">
+  <div class="container">
+    <div class="about-grid">
+      <div class="about-left">
+        <p class="section-label reveal">Our Story</p>
+        <h2 class="section-title reveal reveal-delay-1">A coastal gem on<br/><em>Sliema's shoreline</em></h2>
+        <p class="about-text reveal reveal-delay-2">
+          Perched on <strong>Tower Road</strong>, where the morning light catches the rippling
+          waters of Sliema Creek, Mason's Bistro has long been a beloved fixture on Malta's
+          dining scene. We opened with one belief: that beautiful food is best enjoyed with
+          sea air and good company.
+        </p>
+        <p class="about-text reveal reveal-delay-3">
+          Our kitchen draws on the <strong>sun-drenched flavours of the Mediterranean</strong> —
+          from the olive groves of Greece to the spice markets of North Africa — interpreted
+          through Malta's own rich culinary heritage. Every plate carries the warmth of the
+          islands it was inspired by.
+        </p>
+        <p class="about-text reveal reveal-delay-3">
+          Whether you're joining us for a lazy brunch watching the ferries drift past,
+          cocktails at our famous <strong>happy hour</strong>, or a long dinner as the
+          harbour lights come on — Mason's is where Sliema slows down.
+        </p>
+        <div class="about-stat-row reveal reveal-delay-4">
+          <div class="about-stat">
+            <strong>94<span style="font-size:1.4rem;color:var(--navy);">%</span></strong>
+            <span>Recommended on Facebook</span>
+          </div>
+          <div class="about-stat">
+            <strong>2×</strong>
+            <span>Happy Hours daily</span>
+          </div>
+          <div class="about-stat">
+            <strong>All<br/>Day</strong>
+            <span>Breakfast until noon</span>
+          </div>
+        </div>
+      </div>
+      <div class="about-right reveal reveal-delay-2">
+        <div class="about-accent-line"></div>
+        <div class="about-img-wrap">
+          <img src="https://images.unsplash.com/photo-1600891964599-f61ba0e24092?w=800&q=85&auto=format&fit=crop" alt="Mason's Bistro warm Mediterranean dining" loading="lazy"/>
+          <div class="about-img-badge">
+            <strong>Est. on Tower Road</strong>
+            <span>Sliema, Malta</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Wave -->
+<div class="wave-divider" style="background:var(--off-white)">
+  <svg viewBox="0 0 1440 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M0 0 C360 52 1080 52 1440 0 L1440 52 L0 52Z" fill="#0e1d5c"/>
+  </svg>
+</div>
+
+<!-- ── HAPPY HOUR ──────────────────────────── -->
+<section id="happy-hour">
+  <div class="container hh-inner">
+    <div class="hh-top">
+      <div>
+        <p class="hh-label reveal">Daily Offer</p>
+        <h2 class="hh-title reveal reveal-delay-1">Happy <em>Hour</em><br/>is Always Near</h2>
+        <p class="hh-sub reveal reveal-delay-2">
+          Two chances every day to enjoy our craft cocktails at an unbeatable offer.
+          Two cocktails for the price of one — that's the Mason's way.
+        </p>
+      </div>
+      <div class="hh-deal-badge reveal reveal-delay-2">
+        <div class="hh-deal-num">2 for 1</div>
+        <div class="hh-deal-text">All Cocktails</div>
+      </div>
+    </div>
+
+    <div class="hh-times">
+      <div class="hh-time-card reveal">
+        <div class="hh-icon">🌅</div>
+        <p class="hh-time-label">Evening Happy Hour</p>
+        <div class="hh-time-range">16:00 — 19:00</div>
+        <p class="hh-time-note">Golden hour cocktails by the sea</p>
+      </div>
+      <div class="hh-time-card reveal reveal-delay-1">
+        <div class="hh-icon">🌙</div>
+        <p class="hh-time-label">Late Night Happy Hour</p>
+        <div class="hh-time-range">22:00 — 23:00</div>
+        <p class="hh-time-note">End the night the right way</p>
+      </div>
+    </div>
+
+    <div class="hh-countdown-wrap reveal">
+      <p class="hh-countdown-label" id="hh-countdown-label">Time until next happy hour</p>
+      <div id="hh-status-message">Loading…</div>
+      <div class="hh-countdown" id="hh-countdown">
+        <div class="hh-cd-unit"><span class="hh-cd-num" id="cd-hours">00</span><div class="hh-cd-label">Hours</div></div>
+        <div class="hh-cd-sep">:</div>
+        <div class="hh-cd-unit"><span class="hh-cd-num" id="cd-mins">00</span><div class="hh-cd-label">Minutes</div></div>
+        <div class="hh-cd-sep">:</div>
+        <div class="hh-cd-unit"><span class="hh-cd-num" id="cd-secs">00</span><div class="hh-cd-label">Seconds</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Wave -->
+<div class="wave-divider" style="background:var(--navy-deeper)">
+  <svg viewBox="0 0 1440 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M0 52 C360 0 1080 0 1440 52 L1440 52 L0 52Z" fill="#ffffff"/>
+  </svg>
+</div>
+
+<!-- ── MENU ─────────────────────────────────── -->
+<section id="menu">
+  <div class="container">
+    <div class="menu-header">
+      <p class="section-label reveal">Our Kitchen</p>
+      <h2 class="section-title reveal reveal-delay-1">Menus &amp; Dishes</h2>
+    </div>
+    <div class="menu-tabs reveal reveal-delay-2" role="tablist">
+      <button class="menu-tab active" role="tab" aria-selected="true"  data-panel="breakfast">Breakfast</button>
+      <button class="menu-tab"        role="tab" aria-selected="false" data-panel="sharing">Sharing Boards</button>
+      <button class="menu-tab"        role="tab" aria-selected="false" data-panel="mains">Mains</button>
+      <button class="menu-tab"        role="tab" aria-selected="false" data-panel="sandwiches">Sandwiches &amp; Wraps</button>
+      <button class="menu-tab"        role="tab" aria-selected="false" data-panel="cocktails">Cocktails</button>
+      <button class="menu-tab"        role="tab" aria-selected="false" data-panel="drinks">Drinks</button>
+    </div>
+
+    <!-- Breakfast -->
+    <div class="menu-panel active" id="panel-breakfast" role="tabpanel">
+      <p class="menu-note" style="margin-bottom:1.5rem;margin-top:0">Served until 12:00 daily</p>
+      <div class="menu-grid">
+        <div class="menu-card signature">
+          <div class="menu-card-info"><div class="menu-card-name">Mason's Full Mediterranean</div><div class="menu-card-desc">Two eggs any style, grilled halloumi, roasted tomatoes, mushrooms, smoked salmon, crusty sourdough</div></div>
+          <div class="menu-card-price">€14.50</div>
+        </div>
+        <div class="menu-card">
+          <div class="menu-card-info"><div class="menu-card-name">Eggs Benedict</div><div class="menu-card-desc">Poached eggs, Parma ham, hollandaise sauce, toasted English muffin</div></div>
+          <div class="menu-card-price">€11.50</div>
+        </div>
+        <div class="menu-card signature">
+          <div class="menu-card-info"><div class="menu-card-name">Shakshuka</div><div class="menu-card-desc">Eggs poached in spiced tomato &amp; pepper sauce, feta, harissa, warm pita bread</div></div>
+          <div class="menu-card-price">€12.00</div>
+        </div>
+        <div class="menu-card">
+          <div class="menu-card-info"><div class="menu-card-name">Smashed Avocado Toast</div><div class="menu-card-desc">Sourdough, lime-smashed avocado, poached egg, chilli flakes, dukkah</div></div>
+          <div class="menu-card-price">€10.50</div>
+        </div>
+        <div class="menu-card">
+          <div class="menu-card-info"><div class="menu-card-name">French Toast au Miel</div><div class="menu-card-desc">Brioche, local honey, mascarpone, fresh berries, toasted almonds</div></div>
+          <div class="menu-card-price">€9.50</div>
+        </div>
+        <div class="menu-card">
+          <div class="menu-card-info"><div class="menu-card-name">Greek Yoghurt Bowl</div><div class="menu-card-desc">Strained yoghurt, seasonal fruit compote, granola, wildflower honey</div></div>
+          <div class="menu-card-price">€7.50</div>
+        </div>
+        <div class="menu-card">
+          <div class="menu-card-info"><div class="menu-card-name">Ftira Bismarck</div><div class="menu-card-desc">Traditional Maltese bread, olive spread, anchovies, capers, sunny-side-up egg</div></div>
+          <div class="menu-card-price">€9.00</div>
+        </div>
+        <div class="menu-card">
+          <div class="menu-card-info"><div class="menu-card-name">Continental Basket</div><div class="menu-card-desc">Assorted pastries, seasonal jam, butter, orange juice, tea or coffee</div></div>
+          <div class="menu-card-price">€8.50</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sharing Boards -->
+    <div class="menu-panel" id="panel-sharing" role="tabpanel">
+      <div class="menu-grid">
+        <div class="menu-card signature">
+          <div class="menu-card-info"><div class="menu-card-name">The Mason's Board</div><div class="menu-card-desc">Cured meats, aged cheeses, olives, sun-dried tomatoes, grapes, fig chutney, artisan crackers (serves 2–3)</div></div>
+          <div class="menu-card-price">€22.00</div>
+        </div>
+        <div class="menu-card">
+          <div class="menu-card-info"><div class="menu-card-name">Mezze Board</div><div class="menu-card-desc">Hummus, baba ganoush, tzatziki, labneh, warm pita, crudités, mixed olives</div></div>
+          <div class="menu-card-price">€18.50</div>
+        </div>
+        <div class="menu-card signature">
+          <div class="menu-card-info"><div class="menu-card-name">Seafront Seafood Platter</div><div class="menu-card-desc">Garlic prawns, calamari fritti, grilled octopus, lemon aioli (serves 2)</div></div>
+          <div class="menu-card-price">€28.00</div>
+        </div>
+        <div class="menu-card">
+          <div class="menu-card-info"><div class="menu-card-name">Cheese Selection</div><div class="menu-card-desc">Three artisan cheeses, quince paste, walnuts, honeycomb, seeded crackers</div></div>
+          <div class="menu-card-price">€16.00</div>
+        </div>
+        <div class="menu-card">
+          <div class="menu-card-info"><div class="menu-card-name">Bruschetta Trio</div><div class="menu-card-desc">Classic tomato &amp; basil / whipped ricotta &amp; honey / tapenade &amp; goat's cheese</div></div>
+          <div class="menu-card-price">€11.00</div>
+        </div>
+        <div class="menu-card">
+          <div class="menu-card-info"><div class="menu-card-name">Patatas Bravas &amp; Aioli</div><div class="menu-card-desc">Crispy potatoes, smoky tomato sauce, saffron aioli, smoked paprika</div></div>
+          <div class="menu-card-price">€8.50</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mains -->
+    <div class="menu-panel" id="panel-mains" role="tabpanel">
+      <div class="menu-grid">
+        <div class="menu-card signature">
+          <div class="menu-card-info"><div class="menu-card-name">Grilled Sea Bass</div><div class="menu-card-desc">Whole sea bass, lemon &amp; herb butter, caperberry salsa verde, roasted fennel, saffron potatoes</div></div>
+          <div class="menu-card-price">€26.50</div>
+        </div>
+        <div class="menu-card">
+          <div class="menu-card-info"><div class="menu-card-name">Lamb Tagine</div><div class="menu-card-desc">Slow-braised shoulder, preserved lemon, apricots, toasted almonds, harissa couscous</div></div>
+          <div class="menu-card-price">€23.50</div>
+        </div>
+        <div class="menu-card signature">
+          <div class="menu-card-info"><div class="menu-card-name">Saffron Risotto</div><div class="menu-card-desc">Carnaroli rice, Maltese saffron, tiger prawns, parmesan, lemon zest, chive oil</div></div>
+          <div class="menu-card-price">€21.00</div>
+        </div>
+        <div class="menu-card">
+          <div class="menu-card-info"><div class="menu-card-name">Mediterranean Grilled Chicken</div><div class="menu-card-desc">Free-range breast, zaatar, roasted red peppers, whipped hummus, sumac-dressed greens</div></div>
+          <div class="menu-card-price">€19.50</div>
+        </div>
+        <div class="menu-card">
+          <div class="menu-card-info"><div class="menu-card-name">Pasta al Pesto</div><div class="menu-card-desc">Fresh fettuccine, house-made basil pesto, cherry tomatoes, pine nuts, aged pecorino</div></div>
+          <div class="menu-card-price">€15.50</div>
+        </div>
+        <div class="menu-card">
+          <div class="menu-card-info"><div class="menu-card-name">Halloumi &amp; Chickpea Stack (V)</div><div class="menu-card-desc">Grilled halloumi, spiced chickpeas, roasted aubergine, tahini dressing, pomegranate</div></div>
+          <div class="menu-card-price">€17.00</div>
+        </div>
+        <div class="menu-card">
+          <div class="menu-card-info"><div class="menu-card-name">Ribeye Steak 250g</div><div class="menu-card-desc">Maltese beef, truffle butter, hand-cut chips, watercress salad, béarnaise</div></div>
+          <div class="menu-card-price">€32.00</div>
+        </div>
+        <div class="menu-card">
+          <div class="menu-card-info"><div class="menu-card-name">Moules Marinière</div><div class="menu-card-desc">Fresh Maltese mussels, white wine, shallots, garlic, cream, crusty bread</div></div>
+          <div class="menu-card-price">€18.50</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sandwiches -->
+    <div class="menu-panel" id="panel-sandwiches" role="tabpanel">
+      <p class="menu-note" style="margin-bottom:1.5rem;margin-top:0">Served until 17:00 daily</p>
+      <div class="menu-grid">
+        <div class="menu-card signature">
+          <div class="menu-card-info"><div class="menu-card-name">Mason's Club Sandwich</div><div class="menu-card-desc">Triple-decker, roast chicken, crispy bacon, avocado, tomato, rocket, garlic mayo, sourdough</div></div>
+          <div class="menu-card-price">€13.50</div>
+        </div>
+        <div class="menu-card">
+          <div class="menu-card-info"><div class="menu-card-name">Smoked Salmon Bagel</div><div class="menu-card-desc">Toasted sesame bagel, cream cheese, capers, red onion, cucumber, dill</div></div>
+          <div class="menu-card-price">€11.50</div>
+        </div>
+        <div class="menu-card">
+          <div class="menu-card-info"><div class="menu-card-name">Mediterranean Wrap</div><div class="menu-card-desc">Grilled chicken, roasted peppers, hummus, feta, rocket, tzatziki, tomato tortilla</div></div>
+          <div class="menu-card-price">€11.00</div>
+        </div>
+        <div class="menu-card">
+          <div class="menu-card-info"><div class="menu-card-name">Ftira Tonno</div><div class="menu-card-desc">Traditional Maltese bread, tuna, tomato, olives, capers, fresh basil, olive oil</div></div>
+          <div class="menu-card-price">€9.50</div>
+        </div>
+        <div class="menu-card">
+          <div class="menu-card-info"><div class="menu-card-name">Falafel &amp; Tahini Wrap (V)</div><div class="menu-card-desc">Spiced falafel, tahini, pickled cabbage, pomegranate seeds, harissa, coriander</div></div>
+          <div class="menu-card-price">€10.00</div>
+        </div>
+        <div class="menu-card">
+          <div class="menu-card-info"><div class="menu-card-name">Grilled Halloumi Sandwich</div><div class="menu-card-desc">Thick-cut halloumi, roasted tomato jam, rocket, mint, crusty ciabatta</div></div>
+          <div class="menu-card-price">€10.50</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cocktails -->
+    <div class="menu-panel" id="panel-cocktails" role="tabpanel">
+      <p class="menu-note" style="margin-bottom:1.5rem;margin-top:0;color:var(--navy);font-style:normal;font-weight:600">
+        ★ 2 for 1 during Happy Hour: 16:00–19:00 &amp; 22:00–23:00
+      </p>
+      <div class="menu-grid">
+        <div class="menu-card signature">
+          <div class="menu-card-info"><div class="menu-card-name">Sliema Sunset</div><div class="menu-card-desc">Aperol, prosecco, blood orange, lychee, rosemary sprig — the house signature</div></div>
+          <div class="menu-card-price">€10.50</div>
+        </div>
+        <div class="menu-card">
+          <div class="menu-card-info"><div class="menu-card-name">Mediterranean Mule</div><div class="menu-card-desc">Vodka, ginger beer, cucumber, fresh mint, lime, sea salt rim</div></div>
+          <div class="menu-card-price">€10.00</div>
+        </div>
+        <div class="menu-card signature">
+          <div class="menu-card-info"><div class="menu-card-name">Tower Road Negroni</div><div class="menu-card-desc">Gin, Campari, sweet vermouth, orange peel, aged in Marsala oak</div></div>
+          <div class="menu-card-price">€11.00</div>
+        </div>
+        <div class="menu-card">
+          <div class="menu-card-info"><div class="menu-card-name">Limoncello Spritz</div><div class="menu-card-desc">Limoncello, prosecco, elderflower, lemon wheel, fresh thyme</div></div>
+          <div class="menu-card-price">€9.50</div>
+        </div>
+        <div class="menu-card">
+          <div class="menu-card-info"><div class="menu-card-name">Fig &amp; Honey Sour</div><div class="menu-card-desc">Bourbon, fig preserve, local honey, fresh lemon, egg white, Angostura bitters</div></div>
+          <div class="menu-card-price">€10.50</div>
+        </div>
+        <div class="menu-card">
+          <div class="menu-card-info"><div class="menu-card-name">Margarita del Mare</div><div class="menu-card-desc">Tequila blanco, triple sec, fresh lime, smoked sea salt, chilli rim</div></div>
+          <div class="menu-card-price">€10.00</div>
+        </div>
+        <div class="menu-card">
+          <div class="menu-card-info"><div class="menu-card-name">Jasmine Martini</div><div class="menu-card-desc">Gin, Cointreau, jasmine tea syrup, lemon juice, chilled</div></div>
+          <div class="menu-card-price">€10.50</div>
+        </div>
+        <div class="menu-card">
+          <div class="menu-card-info"><div class="menu-card-name">Virgin Coastline (0%)</div><div class="menu-card-desc">Elderflower, cucumber, fresh mint, lime, ginger beer, basil foam</div></div>
+          <div class="menu-card-price">€7.50</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Drinks -->
+    <div class="menu-panel" id="panel-drinks" role="tabpanel">
+      <div class="menu-grid">
+        <div class="menu-card"><div class="menu-card-info"><div class="menu-card-name">Espresso</div><div class="menu-card-desc">Single origin Maltese roast</div></div><div class="menu-card-price">€2.50</div></div>
+        <div class="menu-card"><div class="menu-card-info"><div class="menu-card-name">Flat White / Cappuccino</div><div class="menu-card-desc">Oat, almond, or whole milk</div></div><div class="menu-card-price">€3.50</div></div>
+        <div class="menu-card"><div class="menu-card-info"><div class="menu-card-name">Fresh Orange Juice</div><div class="menu-card-desc">Squeezed to order</div></div><div class="menu-card-price">€4.00</div></div>
+        <div class="menu-card"><div class="menu-card-info"><div class="menu-card-name">Local Craft Beer</div><div class="menu-card-desc">Cisk Lager or Hopleaf Pale Ale, 330ml</div></div><div class="menu-card-price">€3.50</div></div>
+        <div class="menu-card"><div class="menu-card-info"><div class="menu-card-name">House White / Red Wine</div><div class="menu-card-desc">150ml glass, Maltese Meridiana</div></div><div class="menu-card-price">€6.50</div></div>
+        <div class="menu-card"><div class="menu-card-info"><div class="menu-card-name">Prosecco</div><div class="menu-card-desc">Flute, chilled</div></div><div class="menu-card-price">€7.00</div></div>
+        <div class="menu-card"><div class="menu-card-info"><div class="menu-card-name">San Pellegrino / Acqua Panna</div><div class="menu-card-desc">500ml</div></div><div class="menu-card-price">€3.00</div></div>
+        <div class="menu-card"><div class="menu-card-info"><div class="menu-card-name">Herbal Tea Selection</div><div class="menu-card-desc">Mint, chamomile, lemon ginger, Earl Grey</div></div><div class="menu-card-price">€3.00</div></div>
+      </div>
+    </div>
+
+    <p class="menu-note reveal">All prices include VAT · Allergen information available on request · V = Vegetarian</p>
+  </div>
+</section>
+
+<!-- Wave -->
+<div class="wave-divider" style="background:var(--white)">
+  <svg viewBox="0 0 1440 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M0 0 C360 52 1080 52 1440 0 L1440 52 L0 52Z" fill="#14297a"/>
+  </svg>
+</div>
+
+<!-- ── RESERVATION ─────────────────────────── -->
+<section id="reservation">
+  <div class="container res-inner">
+    <div class="res-header">
+      <p class="section-label reveal">Book Your Spot</p>
+      <h2 class="section-title reveal reveal-delay-1">Reserve a Table</h2>
+      <p class="reveal reveal-delay-2">Kitchen open daily · 08:00 — 22:00</p>
+    </div>
+    <form class="res-form reveal reveal-delay-2" id="res-form" novalidate>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="res-name">Full Name *</label>
+          <input class="form-control" type="text" id="res-name" placeholder="Your name" required />
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="res-email">Email Address *</label>
+          <input class="form-control" type="email" id="res-email" placeholder="your@email.com" required />
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="res-phone">Phone Number *</label>
+          <input class="form-control" type="tel" id="res-phone" placeholder="+356 xxxx xxxx" required />
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="res-guests">Number of Guests *</label>
+          <select class="form-control" id="res-guests" required>
+            <option value="">Select guests</option>
+            <option>1 guest</option><option>2 guests</option><option>3 guests</option>
+            <option>4 guests</option><option>5 guests</option><option>6 guests</option>
+            <option>7 guests</option><option>8 guests</option><option>9 guests</option>
+            <option>10 guests</option><option>11–15 guests</option><option>16–20 guests</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="res-date">Preferred Date *</label>
+          <input class="form-control" type="date" id="res-date" required />
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="res-time">Preferred Time *</label>
+          <select class="form-control" id="res-time" required>
+            <option value="">Select time</option>
+            <option>08:00</option><option>08:30</option>
+            <option>09:00</option><option>09:30</option>
+            <option>10:00</option><option>10:30</option>
+            <option>11:00</option><option>11:30</option><option>12:00</option><option>12:30</option>
+            <option>13:00</option><option>13:30</option><option>14:00</option><option>14:30</option>
+            <option>15:00</option><option>15:30</option>
+            <option>16:00 🌅 Happy Hour</option><option>16:30 🌅 Happy Hour</option>
+            <option>17:00 🌅 Happy Hour</option><option>17:30 🌅 Happy Hour</option>
+            <option>18:00 🌅 Happy Hour</option><option>18:30 🌅 Happy Hour</option>
+            <option>19:00</option><option>19:30</option><option>20:00</option><option>20:30</option>
+            <option>21:00</option><option>21:30</option>
+            <option>22:00 🌙 Happy Hour</option><option>22:30 🌙 Happy Hour</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group full">
+          <label class="form-label" for="res-occasion">Special Occasion</label>
+          <select class="form-control" id="res-occasion">
+            <option value="">None — just a great meal</option>
+            <option>Birthday celebration 🎂</option><option>Anniversary</option>
+            <option>Romantic date</option><option>Business lunch/dinner</option>
+            <option>Group celebration</option><option>Proposal 💍</option><option>Other</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group full">
+          <label class="form-label" for="res-requests">Special Requests &amp; Dietary Requirements</label>
+          <textarea class="form-control" id="res-requests" placeholder="Allergies, dietary requirements, seating preferences, anything else…"></textarea>
+        </div>
+      </div>
+      <button type="submit" class="btn-primary res-submit">Confirm Reservation →</button>
+      <p class="form-footer-note">We'll confirm within 2 hours · For immediate assistance call +356 2720 2734</p>
+    </form>
+  </div>
+</section>
+
+<!-- Reservation Modal -->
+<div id="res-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+  <div class="modal-backdrop" id="modal-backdrop"></div>
+  <div class="modal-box">
+    <div class="modal-icon">✓</div>
+    <h2 class="modal-title" id="modal-title">Reservation Received</h2>
+    <p class="modal-body">Thank you! Your table request has been sent to our team.</p>
+    <p id="modal-summary"></p>
+    <p class="modal-body" style="font-size:.82rem;margin-top:-.5rem">
+      Questions? Call <a href="tel:+35627202734" style="color:var(--white)">+356 2720 2734</a>
+    </p>
+    <button class="btn-primary modal-close" id="modal-close-btn">Perfect, thank you</button>
+  </div>
+</div>
+
+<!-- Wave -->
+<div class="wave-divider" style="background:var(--navy-dark)">
+  <svg viewBox="0 0 1440 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M0 52 C360 0 1080 0 1440 52 L1440 52 L0 52Z" fill="#f7f8fb"/>
+  </svg>
+</div>
+
+<!-- ── GALLERY ──────────────────────────────── -->
+<section id="gallery">
+  <div class="container">
+    <div class="gallery-header">
+      <p class="section-label reveal">The Atmosphere</p>
+      <h2 class="section-title reveal reveal-delay-1">Life at Mason's</h2>
+    </div>
+    <div class="gallery-grid reveal reveal-delay-2">
+      <div class="gallery-item"><img src="https://images.unsplash.com/photo-1565299585323-38d6b0865b47?w=900&q=80&auto=format&fit=crop" alt="Mediterranean food spread" loading="lazy"/><div class="gallery-overlay"><span class="gallery-overlay-text">Mediterranean flavours</span></div></div>
+      <div class="gallery-item"><img src="https://images.unsplash.com/photo-1551218808-94e220e084d2?w=600&q=80&auto=format&fit=crop" alt="Cocktails at the bar" loading="lazy"/><div class="gallery-overlay"><span class="gallery-overlay-text">Craft cocktails</span></div></div>
+      <div class="gallery-item"><img src="https://images.unsplash.com/photo-1559339352-11d035aa65de?w=600&q=80&auto=format&fit=crop" alt="Seafront dining" loading="lazy"/><div class="gallery-overlay"><span class="gallery-overlay-text">Seafront views</span></div></div>
+      <div class="gallery-item"><img src="https://images.unsplash.com/photo-1482049016688-2d3e1b311543?w=600&q=80&auto=format&fit=crop" alt="Grilled fish" loading="lazy"/><div class="gallery-overlay"><span class="gallery-overlay-text">Fresh catch daily</span></div></div>
+      <div class="gallery-item"><img src="https://images.unsplash.com/photo-1544025162-d76694265947?w=900&q=80&auto=format&fit=crop" alt="Brunch table" loading="lazy"/><div class="gallery-overlay"><span class="gallery-overlay-text">Sunday brunch rituals</span></div></div>
+      <div class="gallery-item"><img src="https://images.unsplash.com/photo-1571091718767-18b5b1457add?w=600&q=80&auto=format&fit=crop" alt="Artisan bread" loading="lazy"/><div class="gallery-overlay"><span class="gallery-overlay-text">Artisan bakes daily</span></div></div>
+      <div class="gallery-item"><img src="https://images.unsplash.com/photo-1506354666786-959d6d497f1a?w=600&q=80&auto=format&fit=crop" alt="Bistro interior" loading="lazy"/><div class="gallery-overlay"><span class="gallery-overlay-text">Warm interiors</span></div></div>
+      <div class="gallery-item"><img src="https://images.unsplash.com/photo-1470337458703-46ad1756a187?w=600&q=80&auto=format&fit=crop" alt="Evening cocktails" loading="lazy"/><div class="gallery-overlay"><span class="gallery-overlay-text">Golden hour cocktails</span></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- Wave -->
+<div class="wave-divider" style="background:var(--off-white)">
+  <svg viewBox="0 0 1440 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M0 24 C240 0 480 48 720 24 C960 0 1200 48 1440 24 L1440 48 L0 48Z" fill="white"/>
+  </svg>
+</div>
+
+<!-- ── CONTACT ──────────────────────────────── -->
+<section id="contact">
+  <div class="container">
+    <div class="contact-grid">
+      <div class="contact-info">
+        <p class="section-label reveal">Find Us</p>
+        <h2 class="section-title reveal reveal-delay-1" style="color:var(--navy)">Come Visit</h2>
+        <div class="contact-detail reveal reveal-delay-2">
+          <div class="contact-icon">📍</div>
+          <div class="contact-detail-text"><strong>Address</strong><span>Tower Road, Sliema, Malta</span></div>
+        </div>
+        <div class="contact-detail reveal reveal-delay-2">
+          <div class="contact-icon">📞</div>
+          <div class="contact-detail-text"><strong>Phone</strong><a href="tel:+35627202734">+356 2720 2734</a></div>
+        </div>
+        <div class="contact-detail reveal reveal-delay-3">
+          <div class="contact-icon">✉️</div>
+          <div class="contact-detail-text"><strong>Email</strong><a href="mailto:masonsvince@gmail.com">masonsvince@gmail.com</a></div>
+        </div>
+        <div class="contact-detail reveal reveal-delay-3">
+          <div class="contact-icon">🕐</div>
+          <div class="contact-detail-text"><strong>Hours</strong><span>Open daily · Kitchen 08:00 — 22:00</span></div>
+        </div>
+        <div class="contact-social reveal reveal-delay-4">
+          <a href="https://www.instagram.com/masons.bistro" class="social-link" target="_blank" rel="noopener" aria-label="Instagram">
+            <svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+          </a>
+          <a href="https://www.facebook.com" class="social-link" target="_blank" rel="noopener" aria-label="Facebook">
+            <svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+          </a>
+        </div>
+      </div>
+      <div class="contact-map reveal reveal-delay-3">
+        <iframe
+          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3233.5!2d14.5083!3d35.9105!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x130e4528b4ae3f8d%3A0x1234567890abcdef!2sTower%20Rd%2C%20Sliema%2C%20Malta!5e0!3m2!1sen!2smt!4v1234567890"
+          title="Mason's Bistro — Tower Road, Sliema, Malta"
+          allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade">
+        </iframe>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── FOOTER ───────────────────────────────── -->
+<footer>
+  <div class="container">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <a href="#hero">
+          <img src="logo.png" alt="Mason's Bistro" style="height:52px; width:auto; filter:brightness(0) invert(1); opacity:0.85;" />
+        </a>
+        <p>A Mediterranean bistro and bar on the Sliema seafront. Fresh flavours, craft cocktails, and two happy hours daily.</p>
+        <div class="contact-social" style="margin-top:1.5rem">
+          <a href="https://www.instagram.com/masons.bistro" class="social-link" target="_blank" rel="noopener" aria-label="Instagram">
+            <svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+          </a>
+          <a href="https://www.facebook.com" class="social-link" target="_blank" rel="noopener" aria-label="Facebook">
+            <svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+          </a>
+        </div>
+      </div>
+      <div>
+        <p class="footer-col-title">Navigate</p>
+        <ul class="footer-links">
+          <li><a href="#about">About Us</a></li>
+          <li><a href="#happy-hour">Happy Hour</a></li>
+          <li><a href="#menu">Menu</a></li>
+          <li><a href="#gallery">Gallery</a></li>
+          <li><a href="#contact">Contact</a></li>
+          <li><a href="#reservation">Reserve a Table</a></li>
+        </ul>
+      </div>
+      <div>
+        <p class="footer-col-title">Contact</p>
+        <ul class="footer-links">
+          <li><a href="tel:+35627202734">+356 2720 2734</a></li>
+          <li><a href="mailto:masonsvince@gmail.com">masonsvince@gmail.com</a></li>
+          <li><span style="color:rgba(255,255,255,.35)">Tower Road, Sliema, Malta</span></li>
+          <li><a href="https://www.instagram.com/masons.bistro" target="_blank" rel="noopener">@masons.bistro</a></li>
+        </ul>
+        <p class="footer-col-title" style="margin-top:1.5rem">Happy Hour</p>
+        <ul class="footer-links">
+          <li><span style="color:rgba(255,255,255,.35)">🌅 16:00 – 19:00</span></li>
+          <li><span style="color:rgba(255,255,255,.35)">🌙 22:00 – 23:00</span></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2025 Mason's Bistro · Tower Road, Sliema, Malta</span>
+      <span><a href="mailto:masonsvince@gmail.com">masonsvince@gmail.com</a></span>
+    </div>
+  </div>
+</footer>
+
+<button id="scroll-top" aria-label="Scroll to top">↑</button>
+
+<!-- ── JAVASCRIPT ───────────────────────────── -->
+<script>
+  // ── LOADER ────────────────────────────────
+  window.addEventListener('load', () => {
+    setTimeout(() => {
+      document.getElementById('loader').classList.add('hidden');
+      document.getElementById('hero-bg').classList.add('loaded');
+    }, 2100);
+  });
+
+  // ── CURSOR ────────────────────────────────
+  const dot  = document.getElementById('cursor-dot');
+  const ring = document.getElementById('cursor-ring');
+  let cx = 0, cy = 0, rx = 0, ry = 0;
+
+  document.addEventListener('mousemove', e => { cx = e.clientX; cy = e.clientY; dot.style.left = cx+'px'; dot.style.top = cy+'px'; });
+  (function animRing() {
+    rx += (cx - rx) * .12; ry += (cy - ry) * .12;
+    ring.style.left = rx+'px'; ring.style.top = ry+'px';
+    requestAnimationFrame(animRing);
+  })();
+
+  const hoverEls = document.querySelectorAll('a, button, .menu-tab, .gallery-item, .hh-time-card');
+  hoverEls.forEach(el => {
+    el.addEventListener('mouseenter', () => document.body.classList.add('cursor-hover'));
+    el.addEventListener('mouseleave', () => document.body.classList.remove('cursor-hover'));
+  });
+
+  // Flip cursor to white on dark sections
+  const darkSections = document.querySelectorAll('#hero, #happy-hour, #reservation, footer');
+  const cursorObs = new IntersectionObserver(entries => {
+    let anyDark = false;
+    darkSections.forEach(s => {
+      const r = s.getBoundingClientRect();
+      if (r.top < window.innerHeight / 2 && r.bottom > window.innerHeight / 2) anyDark = true;
+    });
+    document.body.classList.toggle('cursor-dark', anyDark);
+  }, { threshold: [0, 0.5, 1] });
+  darkSections.forEach(s => cursorObs.observe(s));
+
+  // ── NAV ───────────────────────────────────
+  const nav = document.getElementById('nav');
+  const burger = document.getElementById('nav-hamburger');
+  const navList = document.getElementById('nav-links');
+
+  window.addEventListener('scroll', () => {
+    nav.classList.toggle('scrolled', scrollY > 60);
+    document.getElementById('scroll-top').classList.toggle('visible', scrollY > 600);
+  }, { passive: true });
+
+  burger.addEventListener('click', () => {
+    const open = burger.classList.toggle('open');
+    navList.classList.toggle('open', open);
+    burger.setAttribute('aria-expanded', open);
+  });
+  navList.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+    burger.classList.remove('open'); navList.classList.remove('open'); burger.setAttribute('aria-expanded', false);
+  }));
+
+  // Active link
+  const secs = document.querySelectorAll('section[id]');
+  const navAs = document.querySelectorAll('.nav-links a[href^="#"]');
+  new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) navAs.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + e.target.id));
+    });
+  }, { threshold: .35 }).observe && secs.forEach(s => new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) navAs.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + e.target.id)); });
+  }, { threshold: .35 }).observe(s));
+
+  // ── REVEAL ────────────────────────────────
+  new IntersectionObserver((entries, obs) => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); } });
+  }, { threshold: .12 }).observe && document.querySelectorAll('.reveal').forEach(el => {
+    new IntersectionObserver((entries, obs) => {
+      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); } });
+    }, { threshold: .12 }).observe(el);
+  });
+
+  // ── SCROLL TOP ────────────────────────────
+  document.getElementById('scroll-top').addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+
+  // ── MENU TABS ─────────────────────────────
+  document.querySelectorAll('.menu-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.menu-tab').forEach(t => { t.classList.remove('active'); t.setAttribute('aria-selected', 'false'); });
+      document.querySelectorAll('.menu-panel').forEach(p => p.classList.remove('active'));
+      tab.classList.add('active'); tab.setAttribute('aria-selected', 'true');
+      document.getElementById('panel-' + tab.dataset.panel).classList.add('active');
+    });
+  });
+
+  // ── RESERVATION ───────────────────────────
+  document.getElementById('res-date').min = new Date().toISOString().split('T')[0];
+
+  document.getElementById('res-form').addEventListener('submit', e => {
+    e.preventDefault();
+    const name   = document.getElementById('res-name').value.trim();
+    const email  = document.getElementById('res-email').value.trim();
+    const phone  = document.getElementById('res-phone').value.trim();
+    const guests = document.getElementById('res-guests').value;
+    const date   = document.getElementById('res-date').value;
+    const time   = document.getElementById('res-time').value;
+    if (!name || !email || !phone || !guests || !date || !time) {
+      const f = [...e.target.querySelectorAll('[required]')].find(x => !x.value.trim());
+      if (f) { f.focus(); f.style.borderColor = 'rgba(255,120,120,.7)'; } return;
+    }
+    const df = new Date(date).toLocaleDateString('en-GB', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
+    document.getElementById('modal-summary').textContent = `${name} · ${guests} · ${df} at ${time.replace(' ☀️ Happy Hour','').replace(' 🌅 Happy Hour','')}`;
+    document.getElementById('res-modal').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  });
+  document.querySelectorAll('.form-control').forEach(f => f.addEventListener('input', () => f.style.borderColor = ''));
+  function closeModal() { document.getElementById('res-modal').classList.remove('open'); document.body.style.overflow = ''; document.getElementById('res-form').reset(); }
+  document.getElementById('modal-close-btn').addEventListener('click', closeModal);
+  document.getElementById('modal-backdrop').addEventListener('click', closeModal);
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+  // ── HAPPY HOUR COUNTDOWN ──────────────────
+  function updateHH() {
+    const now  = new Date();
+    const secs = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
+    const hh1s = 16*3600, hh1e = 19*3600, hh2s = 22*3600, hh2e = 23*3600;
+    let msg = '', until = 0, active = false;
+
+    if      (secs >= hh1s && secs < hh1e) { active = true;  msg = 'Happy Hour is ON — Evening Edition 🌅'; until = hh1e - secs; }
+    else if (secs >= hh2s && secs < hh2e) { active = true;  msg = 'Happy Hour is ON — Late Night Edition 🌙'; until = hh2e - secs; }
+    else if (secs < hh1s)                 { active = false; msg = 'Next happy hour: Evening Edition at 16:00'; until = hh1s - secs; }
+    else if (secs < hh2s)                 { active = false; msg = 'Next happy hour: Late Night Edition at 22:00'; until = hh2s - secs; }
+    else                                   { active = false; msg = 'Next happy hour: Evening Edition tomorrow at 16:00'; until = 86400 - secs + hh1s; }
+
+    document.getElementById('hh-status-message').textContent = msg;
+    const h = Math.floor(until/3600), m = Math.floor((until%3600)/60), s = until%60;
+    const pad = n => String(n).padStart(2,'0');
+
+    if (active) {
+      document.getElementById('hh-countdown-label').textContent = 'Happy hour ends in';
+      document.getElementById('hh-countdown').innerHTML = `
+        <div style="display:flex;flex-direction:column;align-items:center;gap:1.25rem">
+          <div class="hh-active-badge">Happy Hour is Active!</div>
+          <div style="display:flex;gap:1.25rem;align-items:center">
+            ${h > 0 ? `<div class="hh-cd-unit"><span class="hh-cd-num">${pad(h)}</span><div class="hh-cd-label">Hours</div></div><div class="hh-cd-sep">:</div>` : ''}
+            <div class="hh-cd-unit"><span class="hh-cd-num">${pad(m)}</span><div class="hh-cd-label">Minutes</div></div>
+            <div class="hh-cd-sep">:</div>
+            <div class="hh-cd-unit"><span class="hh-cd-num">${pad(s)}</span><div class="hh-cd-label">Seconds</div></div>
+          </div>
+        </div>`;
+    } else {
+      document.getElementById('hh-countdown-label').textContent = 'Time until next happy hour';
+      const cdEl = document.getElementById('hh-countdown');
+      if (cdEl.querySelector('.hh-active-badge')) {
+        cdEl.innerHTML = `
+          <div class="hh-cd-unit"><span class="hh-cd-num" id="cd-hours">${pad(h)}</span><div class="hh-cd-label">Hours</div></div>
+          <div class="hh-cd-sep">:</div>
+          <div class="hh-cd-unit"><span class="hh-cd-num" id="cd-mins">${pad(m)}</span><div class="hh-cd-label">Minutes</div></div>
+          <div class="hh-cd-sep">:</div>
+          <div class="hh-cd-unit"><span class="hh-cd-num" id="cd-secs">${pad(s)}</span><div class="hh-cd-label">Seconds</div></div>`;
+      } else {
+        const ch = document.getElementById('cd-hours');
+        const cm = document.getElementById('cd-mins');
+        const cs = document.getElementById('cd-secs');
+        if (ch) { ch.textContent = pad(h); cm.textContent = pad(m); cs.textContent = pad(s); }
+      }
+    }
+  }
+  updateHH();
+  setInterval(updateHH, 1000);
+</script>
+</body>
+</html>
